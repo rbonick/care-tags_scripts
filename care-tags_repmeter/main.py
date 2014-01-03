@@ -1,5 +1,5 @@
 from repreader import RepReader
 
-test = RepReader(249)
+test = RepReader()
 test.parsehtml()
 print("done")

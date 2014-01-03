@@ -3,12 +3,30 @@ from urllib import urlopen
 
 class RepReader:
 
-    #Should be given a usernumber to retrieve rep on
-    #TODO: Support usernames
-    def __init__(self, usernumber=2):
-        self.usernumber = usernumber
+    def __init__(self):
 
+    # Should be given the usernumber to retrieve
+    # TODO: Support usernames
+    # 
+    # @Return: a list in the form [[username, posrep, negrep], ...]
     def parsehtml(self):
+        
+        # Make some soup
+        soup = BeautifulSoup(self.__gethtml())
+           
+        # Find the reputation list section
+        repsection = soup.find(id="post-reputation-list");
+
+        return True
+
+    def __gettotalrep(self, tag):
+        print("called __gettotalrep")
+        print(tag.prettify())
+        print(str(tag.find("ul").find("li").text))
+        return tag.find("ul").find("li").text
+
+    # Gets the html for a page
+    def __gethtml(self):
        # #Get access to user's rep page, and store it as Beautiful Soup  
        # #TODO: Figure out how to be able to access the reputation page
        # page = BeautifulSoup(urlopen("http://care-tags.org/reputation.php?&mode=details&u=" + str(self.usernumber)))
@@ -26,18 +44,7 @@ class RepReader:
        #     
        #     repcount = repcount + 15
        #
-
         # Open the file
-        soup = BeautifulSoup(open("rep.html"))
+        return open("rep.html")
 
-        # Find the reputation list section
-        repsection = soup.find(id="post-reputation-list");
-
-        return True
-
-    def __gettotalrep(self, tag):
-        print("called __gettotalrep")
-        print(tag.prettify())
-        print(str(tag.find("ul").find("li").text))
-        return tag.find("ul").find("li").text
-        
+ 

@@ -70,14 +70,7 @@ class RepReader:
             currlist.append(negrep)
             replist.append(currlist)
 
-        # Current rudimentary display
-        # TODO: Create class for displaying contents of list
-        #       in a more visually pleasing manner
-        print("Reputation:")
-        for each in replist:
-            print(each)
-
-        return True
+        return replist
 
     def __gettotalrep(self, tag):
         return int(tag.find("ul").find("li").text.split()[0])
@@ -127,30 +120,41 @@ class RepReader:
     # Should be given a usernumber to retrieve most repped post
     # TODO: Support usernames
     #
-    # @Return: A tuple in the form of (post text, rep)
+    # @Return: A list in the form of (post text, rep, url)
     def mostrepped(self, usernum):
-    
+
         ## Get rep pages
         pages = self.__gethtml(usernum)
         postdict = defaultdict(list)
 
+        # Iterate through each page
         for page in pages:
+
+            # Make some soup
             soup = BeautifulSoup(page)
 
+            # Get the list of rep on the page
             repsection = soup.find(id="post-reputation-list")
 
             repsection.contents = [a for a in repsection.contents if a != "\n"]
 
+            # Iterate through rep
             for child in repsection.children:
+                
+                # Ignore the page navigation at the bottom of pages
                 if child.name == "ul":
                     continue
 
+                # Store rep
                 rep = child.find(class_ = "reputation-rating").contents[0]["title"].split()[1]
                 
+                # Store post #
                 try:
                     link = child.find_all("a")[1]
                     prestrip = link.string.split("[#p")[1]
                     postnum = prestrip.split("]")[0]
+                    
+                    # Add rep to the dictionary for that post number
                     postdict[postnum].append(rep)
                 except:
                     continue                                
@@ -158,6 +162,7 @@ class RepReader:
         ## Map rep in the form of (post #, rep)
         replist = []
         
+        # Sum up the reps for each post and store in a list
         for postnum, replst in postdict.iteritems():
             postrep = 0
             for rep in replst:
@@ -168,16 +173,19 @@ class RepReader:
         replist.sort(key=itemgetter(1), reverse=True)
         mostrep = replist[0]            
         postnum = mostrep[0]
-        print("Postnum: " + postnum)
 
         ## Get associated post text
+        # Make URL
         url = "http://care-tags.org/viewtopic.php?p="+postnum+"#p"+postnum
-        print("url:" + url)
+        
+        # Get text of post
         response = self.session.get(url)
         page = BeautifulSoup(response.text)
         postdiv = page.find(id="p"+postnum)
-        print("postdiv: " + postdiv.prettify())
-        posttext = postdiv.find(_class="content")
-        print("Posttext: " + posttext.prettify())
-        text = posttext.contents.prettify()
-        print("Text: " + text)
+        postcontent = postdiv.find(class_="content")
+        txtlst = postcontent.contents
+        text = "".join(x.string for x in txtlst if isinstance(x.string, unicode))
+        
+        # Return text and rep
+        return [text, mostrep[1], url]
+        

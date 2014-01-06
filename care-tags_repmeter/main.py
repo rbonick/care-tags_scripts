@@ -1,11 +1,13 @@
 from repreader import RepReader
 from operator import itemgetter
+from displayer import Displayer
 
 test = RepReader("PythonBot","autonomous")
-print("Total reputation received:")
-for item in sorted(test.receivedrep(59),key=itemgetter(1),reverse=True):
-    print(item)
-print("\nMost repped post:")
-for item in test.mostrepped(59):
-    print(item)
+display = Displayer()
+
+allrep = sorted(test.receivedrep(2),key=itemgetter(1),reverse=True)
+display.displayAllRep(allrep)
+
+mostrep = test.mostrepped(2)
+
 print("done")

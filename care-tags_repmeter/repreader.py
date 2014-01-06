@@ -17,7 +17,7 @@ class RepReader:
     # TODO: Support usernames
     # 
     # @Return: a list in the form [[username, posrep, negrep], ...]
-    def parsehtml(self, usernum):
+    def receivedrep(self, usernum):
         
         pages = self.__gethtml(usernum)
         repdict = defaultdict(list)

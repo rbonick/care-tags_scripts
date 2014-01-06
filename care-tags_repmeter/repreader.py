@@ -5,6 +5,7 @@ import urllib2
 import cookielib
 import re
 import time
+import requests
 
 class RepReader:
 
@@ -16,25 +17,29 @@ class RepReader:
     # TODO: Support usernames
     # 
     # @Return: a list in the form [[username, posrep, negrep], ...]
-    def parsehtml(self):
+    def parsehtml(self, usernum):
         
-        # Make some soup
-        soup = BeautifulSoup(self.__gethtml())
-           
-        # Find the reputation list section
-        repsection = soup.find(id="post-reputation-list")
-       
-        repsection.contents = [a for a in repsection.contents if a != "\n"]
-        
+        pages = self.__gethtml(usernum)
         repdict = defaultdict(list)
+        for page in pages:
+            
+            # Make some soup
+            soup = BeautifulSoup(page)
+               
+            # Find the reputation list section
+            repsection = soup.find(id="post-reputation-list")
+           
+            repsection.contents = [a for a in repsection.contents if a != "\n"]
 
-        for child in repsection.children:
-            user = child.find("a").string
+            for child in repsection.children:
+                if child.name == "ul":
+                    continue
+                user = child.find("a").string
 
-            rep = child.find(class_ = "reputation-rating").contents[0]["title"].split()[1]
+                rep = child.find(class_ = "reputation-rating").contents[0]["title"].split()[1]
 
-            repdict[user].append(rep)
-
+                repdict[user].append(rep)
+        
         replist = []
 
         for usr, lst in repdict.iteritems():
@@ -49,77 +54,45 @@ class RepReader:
             currlist.append(posrep)
             currlist.append(negrep)
             replist.append(currlist)
-        print(replist)
         return True
 
     def __gettotalrep(self, tag):
-        print("called __gettotalrep")
-        print(tag.prettify())
-        print(str(tag.find("ul").find("li").text))
-        return tag.find("ul").find("li").text
+        return int(tag.find("ul").find("li").text.split()[0])
 
     # Gets the html for a page
-    def __gethtml(self):
+    def __gethtml(self, usernum):
         
-        ## Connect to phpbb and "login"
+        # Initial variables
         username = self.username
         password = self.password
-        print(username + " " + password)
-        website = "http://www.care-tags.org/ucp.php?mode=login"
-        loginmsg = "You have been successfully logged in." 
-        cookies = cookielib.CookieJar()
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookies))
-        logindata = urllib.urlencode({"username": username,
-                      "password":password, "autologin": "on", 
-                      "login":"Login"})
-                                    
-        response = opener.open(website, logindata)
-        bs = BeautifulSoup(response.read())
-        print(bs.prettify())
-        if loginmsg in response.read():
-            print("Logged in " + username + " successfully!")
-            print("Cookies are:")
-            for cookie in cookies:
-                print(cookie)
-            
-            testsite = "http://www.care-tags.org"
-            logoutmsg = "Logout [ " + username + " ]"
-            response = opener.open(testsite)
-            if logoutmsg not in response.read():
-                print("Lost the cookies!")
-                print("Cookies are:")
-                for cookie in cookies:
-                    print(cookie)
-        else:
-            print("Did not get logged in")
-         
-
-
-
-        #Store each page in a list
-        pages = []
-
-        #Get access to user's rep page, and store it as Beautiful Soup  
-        #TODO: Figure out how to be able to access the reputation page
-        page = BeautifulSoup(urlopen("http://care-tags.org/reputation.php?&mode=details&u=" + str(self.usernumber)))
+        website = "http://care-tags.org/ucp.php?mode=login"
         
-        #Find the overall number of reputation a user has
-        totalrep=self.__gettotalrep(page.find(id="post-reputation-list"))
-       
-        #Iterate through all the pages
+        # Start a session
+        session = requests.Session()
+        
+        # Login with provided credentials
+        payload = {"username": username, "password":password, 
+                    "autologin":"on","login":"login"}
+        response = session.post(website, data=payload)
+        
+        # Visit desired user's rep page
+        response = session.get("http://care-tags.org/reputation.php?mode=details&u="+str(usernum)) 
+        
+        # Pull user's total rep
+        bs = BeautifulSoup(response.text)
+        totalrep = self.__gettotalrep(bs.find(id="post-reputation-list"))
+
+        # Iterate through all rep pages
+        pages = []
+        urls = []
         repcount = 0 
         while repcount < totalrep:
-            currentpage = BeautifulSoup(urlopen("http://care-tags.org/reputation.php?&mode=details&u=" + str(self.usernumber)+ "&start=" + repcount))
+            currentpage = "http://care-tags.org/reputation.php?&mode=details&u=" + str(usernum)+ "&start=" + str(repcount)
           
-            #Parse each page
-           
-           
+            # Store each page in a list
+            response = session.get(currentpage)
+            pages.append(response.text) 
+            urls.append(response.url)
             repcount = repcount + 15
-       
 
-       ##OLD METHOD     
-       #
-       # # Open the file
-       # return open("rep.html")
-
- 
+        return pages

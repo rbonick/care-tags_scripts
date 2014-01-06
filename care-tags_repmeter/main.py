@@ -1,5 +1,5 @@
 from repreader import RepReader
 
 test = RepReader("PythonBot","autonomous")
-test.parsehtml()
+test.parsehtml(249)
 print("done")

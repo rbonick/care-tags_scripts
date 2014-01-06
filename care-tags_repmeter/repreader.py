@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from collections import defaultdict
+from operator import itemgetter
 import urllib
 import urllib2
 import cookielib
@@ -12,7 +13,10 @@ class RepReader:
     def __init__(self, username, password):
         self.username = username
         self.password = password
-
+        
+        # Start a session
+        self.session = requests.Session()
+        
     # Should be given the usernumber to retrieve
     # TODO: Support usernames
     # 
@@ -86,16 +90,14 @@ class RepReader:
         password = self.password
         website = "http://care-tags.org/ucp.php?mode=login"
         
-        # Start a session
-        session = requests.Session()
-        
         # Login with provided credentials
+        sess = self.session
         payload = {"username": username, "password":password, 
                     "autologin":"on","login":"login"}
-        response = session.post(website, data=payload)
+        response = sess.post(website, data=payload)
         
         # Visit desired user's rep page
-        response = session.get("http://care-tags.org/reputation.php?mode=details&u="+str(usernum)) 
+        response = sess.get("http://care-tags.org/reputation.php?mode=details&u="+str(usernum)) 
         
         # Pull user's total rep
         bs = BeautifulSoup(response.text)
@@ -113,7 +115,7 @@ class RepReader:
             currentpage = "http://care-tags.org/reputation.php?&mode=details&u=" + str(usernum)+ "&start=" + str(repcount)
           
             # Store each page in a list
-            response = session.get(currentpage)
+            response = sess.get(currentpage)
             pages.append(response.text) 
             urls.append(response.url)
         
@@ -121,3 +123,61 @@ class RepReader:
             repcount = repcount + 15
 
         return pages
+
+    # Should be given a usernumber to retrieve most repped post
+    # TODO: Support usernames
+    #
+    # @Return: A tuple in the form of (post text, rep)
+    def mostrepped(self, usernum):
+    
+        ## Get rep pages
+        pages = self.__gethtml(usernum)
+        postdict = defaultdict(list)
+
+        for page in pages:
+            soup = BeautifulSoup(page)
+
+            repsection = soup.find(id="post-reputation-list")
+
+            repsection.contents = [a for a in repsection.contents if a != "\n"]
+
+            for child in repsection.children:
+                if child.name == "ul":
+                    continue
+
+                rep = child.find(class_ = "reputation-rating").contents[0]["title"].split()[1]
+                
+                try:
+                    link = child.find_all("a")[1]
+                    prestrip = link.string.split("[#p")[1]
+                    postnum = prestrip.split("]")[0]
+                    postdict[postnum].append(rep)
+                except:
+                    continue                                
+                
+        ## Map rep in the form of (post #, rep)
+        replist = []
+        
+        for postnum, replst in postdict.iteritems():
+            postrep = 0
+            for rep in replst:
+                postrep = postrep + int(rep)
+            replist.append((postnum, postrep))
+
+        ## Find highest rep count
+        replist.sort(key=itemgetter(1), reverse=True)
+        mostrep = replist[0]            
+        postnum = mostrep[0]
+        print("Postnum: " + postnum)
+
+        ## Get associated post text
+        url = "http://care-tags.org/viewtopic.php?p="+postnum+"#p"+postnum
+        print("url:" + url)
+        response = self.session.get(url)
+        page = BeautifulSoup(response.text)
+        postdiv = page.find(id="p"+postnum)
+        print("postdiv: " + postdiv.prettify())
+        posttext = postdiv.find(_class="content")
+        print("Posttext: " + posttext.prettify())
+        text = posttext.contents.prettify()
+        print("Text: " + text)

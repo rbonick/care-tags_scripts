@@ -188,4 +188,27 @@ class RepReader:
         
         # Return text and rep
         return [text, mostrep[1], url]
-        
+       
+if __name__ == "__main__":
+    from optparse import OptionParser
+    parser = OptionParser()
+    
+    parser.add_option(
+        "-n",
+        "--number",
+        dest="usernum",
+        help="The user number to look up",
+        type="int",
+        default=2
+    )
+
+    (options, args) = parser.parse_args()
+
+    test = RepReader("PythonBot","autonomous")
+    print("Total reputation received:")
+    for item in sorted(test.receivedrep(options.usernum),key=itemgetter(1),reverse=True):
+        print(item)
+    print("\nMost repped post:")
+    for item in test.mostrepped(options.usernum):
+        print(item)
+    print("done") 

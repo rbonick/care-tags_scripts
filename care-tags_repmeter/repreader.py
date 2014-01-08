@@ -7,6 +7,7 @@ import cookielib
 import re
 import time
 import requests
+import sys
 
 class RepReader:
 
@@ -73,7 +74,12 @@ class RepReader:
         return replist
 
     def __gettotalrep(self, tag):
-        return int(tag.find("ul").find("li").text.split()[0])
+        try:
+            rep = int(tag.find("ul").find("li").text.split()[0])
+        except:
+            print("An error occured. Are you sure you're logged in correctly?")
+            sys.exit("Couldn't find total rep")
+        return rep
 
     # Gets the html for a page
     def __gethtml(self, usernum):
@@ -200,20 +206,42 @@ class RepReader:
        
 if __name__ == "__main__":
     from optparse import OptionParser
+    import sys
+    
     parser = OptionParser()
     
+    usage = "Usage: %prog -u <USERNAME> -p <PASSWORD> -n <USERNUMBER TO DISPLAY>"
+    parser = OptionParser(usage)
+
     parser.add_option(
-        "-n",
-        "--number",
-        dest="usernum",
-        help="The user number to look up",
-        type="int",
-        default=2
-    )
+        "-u",
+        "--username",
+        dest="user",
+        help="Needs a username to login with",
+        default=None)
+
+    parser.add_option(
+        "-p",
+        "--password",
+        dest="pw",
+        help="Need the password to login user",
+        default=None)
+
+    parser.add_option(
+            "-n",
+            "--number",
+            dest="usernum",
+            help="The user number to look up",
+            type="int",
+            default=2)
+
+    if not len(sys.argv) == 4:
+        parser.print_help()
+        sys.exit()
 
     (options, args) = parser.parse_args()
 
-    test = RepReader("PythonBot","autonomous")
+    test = RepReader(options.user,options.pw)
     print("Total reputation received:")
     for item in sorted(test.receivedrep(options.usernum),key=itemgetter(1),reverse=True):
         print(item)

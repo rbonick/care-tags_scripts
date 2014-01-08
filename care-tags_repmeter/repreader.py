@@ -120,7 +120,7 @@ class RepReader:
     # Should be given a usernumber to retrieve most repped post
     # TODO: Support usernames
     #
-    # @Return: A list in the form of (post text, rep, url)
+    # @Return: A dictionary containing post text, net reputation, and url
     def mostrepped(self, usernum):
 
         ## Get rep pages
@@ -184,10 +184,19 @@ class RepReader:
         postdiv = page.find(id="p"+postnum)
         postcontent = postdiv.find(class_="content")
         txtlst = postcontent.contents
-        text = "".join(x.string for x in txtlst if isinstance(x.string, unicode))
+
+        # Need to change the br string to \n so they render
+        for item in txtlst:
+            if item.name == "br":
+                item.string = "\n"
+
+        # Put the text together
+        text = "".join(x.string for x in txtlst if
+                       isinstance(x.string, unicode)
+                       or isinstance(x.string, str))
         
-        # Return text and rep
-        return [text, mostrep[1], url]
+        # Return text, net reputation, and url
+        return dict(posttext=text,netrep=mostrep[1],url=url)
        
 if __name__ == "__main__":
     from optparse import OptionParser
@@ -208,7 +217,8 @@ if __name__ == "__main__":
     print("Total reputation received:")
     for item in sorted(test.receivedrep(options.usernum),key=itemgetter(1),reverse=True):
         print(item)
-    print("\nMost repped post:")
-    for item in test.mostrepped(options.usernum):
-        print(item)
-    print("done") 
+    print("\nMost repped post:\n")
+    mostrepped = test.mostrepped(options.usernum)
+    print(mostrepped["posttext"])
+    print("\nNet reputation: " + str(mostrepped["netrep"]))
+    print("\nLink: " + str(mostrepped["url"]))

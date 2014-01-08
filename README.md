@@ -1,7 +1,7 @@
 care-tags_repmeter
 ==================
 
-Displays reputation earned on care-tags.org
+Displays reputation earned on [care-tags.org](http://care-tags.org/index.php)
 ----
 Given a user number (readable off their user page url ("...&u=\<usernumber>")), it displays all reputation that user has received and graphs it, along with showing the user's post with the highest net reputation.
 

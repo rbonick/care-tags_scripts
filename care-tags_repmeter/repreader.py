@@ -235,7 +235,7 @@ if __name__ == "__main__":
             type="int",
             default=2)
 
-    if not len(sys.argv) == 4:
+    if not len(sys.argv) == 7:
         parser.print_help()
         sys.exit()
 

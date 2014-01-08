@@ -41,5 +41,7 @@ display = Displayer()
 allrep = sorted(test.receivedrep(options.usernum),key=itemgetter(1),reverse=True)
 display.displayAllRep(allrep)
 
+print("\n")
+
 mostrep = test.mostrepped(options.usernum)
 display.displayMostRepped(mostrep)

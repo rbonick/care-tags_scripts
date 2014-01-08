@@ -30,6 +30,8 @@ class Displayer:
 
     
     def displayMostRepped(self, mostrepped):
-        self.name = "hi"
-
-
+        print("Most repped post:")
+        print("=================")
+        print("Text:\n" + str(mostrepped["posttext"]) + "\n")
+        print("Net reputation: " + str(mostrepped["netrep"]) + "\n")
+        print("Direct link: " + str(mostrepped["url"]))

@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-from operator import itemgetter
+
 
 class TopMembers:
     def __init__(self, username, password):
@@ -17,7 +17,7 @@ class TopMembers:
 
         memberlist = soup.find(id="memberlist").tbody
         for member in memberlist.children:
-            if member.string is None: # Gets rid of the newlines
+            if member.string is None:  # Gets rid of the newlines
                 # Store username and post count pair in the list
                 user = member.td.a.string
                 postcount = int(member.find(class_="posts").string)
@@ -33,15 +33,14 @@ class TopMembers:
 
         memberlist = soup.find(id="memberlist").tbody
         for member in memberlist.children:
-            if member.string is None: # Get rid of newlines
+            if member.string is None:  # Get rid of newlines
                 # print member.prettify()
                 user = member.td.a.string
                 repcount = member.find_all(class_="posts")[1].string
-                userreplist.append((user,repcount))
+                userreplist.append((user, repcount))
 
         # Take top 10 users
         return userreplist[:10]
-
 
     def __getbs(self, url):
         # Initial variables
@@ -51,9 +50,9 @@ class TopMembers:
 
         # Login with provided credentials
         sess = self.session
-        payload = {"username": username, "password":password,
-            "autologin":"on","login":"login"}
-        response = sess.post(website, data=payload)
+        payload = {"username": username, "password": password,
+                   "autologin": "on", "login": "login"}
+        sess.post(website, data=payload)
 
         # Visit desired url
         response = sess.get(url)

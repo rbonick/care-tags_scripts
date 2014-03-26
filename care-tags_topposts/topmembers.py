@@ -10,11 +10,10 @@ class TopMembers:
         #Start session
         self.session = requests.Session()
 
-    # Returns list containing top 10 users (sorted by post count) and their post count
+    # Returns list containing top 10 users (sorted by post count) and their post count as a tuple
     def gettopposters(self):
         soup = self.__getbs("http://care-tags.org/memberlist.php?mode=&sk=d&sd=d#memberlist")
         postcountlist = []
-        top10 = []
 
         memberlist = soup.find(id="memberlist").tbody
         for member in memberlist.children:
@@ -25,16 +24,23 @@ class TopMembers:
                 postcountlist.append((user, postcount))
 
         # Take the top 10 users
-        postcountlist.sort(key=itemgetter(1), reverse=True)
-        for i in range(10):
-            usercount = postcountlist[i]
-            print "User: " + usercount[0] + "   Posts: " + str(usercount[1])
+        return postcountlist[:10]
 
-        top10 = postcountlist[:10]
+    # Returns list containing top 10 users (sorted by reputation) and their reputation as a tuple
+    def mostreppedusers(self):
+        soup = self.__getbs("http://care-tags.org/memberlist.php?mode=&sk=r&sd=d#memberlist")
+        userreplist = []
 
-        return top10
+        memberlist = soup.find(id="memberlist").tbody
+        for member in memberlist.children:
+            if member.string is None: # Get rid of newlines
+                # print member.prettify()
+                user = member.td.a.string
+                repcount = member.find_all(class_="posts")[1].string
+                userreplist.append((user,repcount))
 
-
+        # Take top 10 users
+        return userreplist[:10]
 
 
     def __getbs(self, url):
@@ -95,4 +101,10 @@ if __name__ == "__main__":
     # (options, args) = parser.parse_args()
 
     hakuna = TopMembers("pythonbot", "autonomous")
-    hakuna.gettopposters()
+    print "Top posters by post count:"
+    for poster in hakuna.gettopposters():
+        print str(poster[0]) + " " + str(poster[1])
+
+    print "Top posters by reputation:"
+    for poster in hakuna.mostreppedusers():
+        print str(poster[0]) + " " + str(poster[1])

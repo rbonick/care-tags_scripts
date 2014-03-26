@@ -8,6 +8,8 @@
       <w>memberlist</w>
       <w>postcount</w>
       <w>postcountdict</w>
+      <w>postcountlist</w>
+      <w>usercount</w>
     </words>
   </dictionary>
 </component>

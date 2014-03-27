@@ -33,11 +33,40 @@ class TopPosts:
 
     # Returns urls for all threads within a given forum
     def getthreads(self, forumurl):
+        threadurls = []
+
         soup = self.__getbs(forumurl)
         pagination = soup.find(class_="pagination")
-        numposts = pagination.text.split()[4]  # Gets the thread count
+        numposts = int(pagination.text.split()[4])  # Gets the thread count
+        currpost = 0
+        while currpost < numposts:
+            print "Working..."
+            soup = self.__getbs(forumurl + "&start=" + str(currpost))
+            postlists = soup.find_all(class_="topiclist topics")
+            if len(postlists) > 1:
+                # Handle announcements (only once)
+                if currpost is 0:
+                    for li in postlists[0].children:
+                        if li.string is None:
+                            # This jumble grabs the first link (the relative link) and splits along = and & signs
+                            # This allows the forum number and topic number to be extracted and put into a standard link
+                            stringsplit = li.dl.dt.a["href"].replace("=", "*").replace("&", "*").split("*")
+                            threadurls.append("http://care-tags.org/viewtopic.php?f=" + stringsplit[1] +
+                                              "&t=" + stringsplit[3])
+                postlists = postlists[1]
+            else:
+                postlists = postlists[0]
 
-        # print soup.prettify()
+            for li in postlists.children:
+                if li.string is None:
+                    # This jumble grabs the first link (the relative link) and splits along = and & signs
+                    # This allows the forum number and topic number to be extracted and put into a standard link
+                    stringsplit = li.dl.dt.a["href"].replace("=", "*").replace("&", "*").split("*")
+                    threadurls.append("http://care-tags.org/viewtopic.php?f=" + stringsplit[1] +
+                                      "&t=" + stringsplit[3])
+            currpost += 25
+
+        return threadurls
 
     def __getbs(self, url):
         # Visit desired url
@@ -86,6 +115,12 @@ if __name__ == "__main__":
     # (options, args) = parser.parse_args()
 
     hakuna = TopPosts("pythonbot", "autonomous")
-
     forums = hakuna.getforums()
-    hakuna.getthreads(forums[1])
+    threads = []
+
+    for forum in forums:
+        for thread in hakuna.getthreads(forum):
+            threads.append(thread)
+
+    for i, thread in enumerate(threads):
+        print (str(i) + ": " + thread)

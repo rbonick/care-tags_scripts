@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
+from operator import itemgetter
+import time
 
 
 class TopPosts:
@@ -68,6 +70,55 @@ class TopPosts:
 
         return threadurls
 
+    # Returns all posts for a given thread in the form (Post url, poster, reputation)
+    def getposts(self, threadurl):
+        allposts = []
+        soup = self.__getbs(threadurl)
+        pagination = soup.find(class_="pagination").text.split()
+        # If there are unread posts, pagination[0] is "First", so you need pagination[4] instead
+        try:
+            numposts = int(pagination[0])
+        except:
+            numposts = int(pagination[4])
+        currpost = 0
+        while currpost < numposts:
+            print "Working..."
+            soup = self.__getbs(threadurl + "&start=" + str(currpost))
+            threadposts = soup.find_all(class_="post")
+            for threadpost in threadposts:
+                # Extract username
+                try:
+                    user = threadpost.div.dl.dt.find_all("a")
+                except:  # If user is banned/no longer exists it won't work so just break
+                    # TODO: Fix so it still works with banned users
+                    break
+                # If no avatar then it's the first element, otherwise the second element
+                try:
+                    if len(user) is 1:
+                        user = user[0].string
+                    elif len(user) is 2:
+                        user = user[1].string
+                    else:
+                        break
+                except:
+                    print "FAILED"
+                    print threadurl + "&start=" + str(currpost)
+                    print threadpost.prettify()
+                    print user
+                    user = "FAILED SOMEHOW"
+
+                # Extract post id and generate its permalink
+                postid = threadpost["id"]
+                posturl = threadurl + "&start=" + str(currpost) + "#" + postid
+
+                # Extract rep of the post
+                postrep = int(threadpost.find(title="Post reputation").a.string)
+
+                allposts.append((posturl, user, postrep))
+            currpost += 30
+
+        return allposts
+
     def __getbs(self, url):
         # Visit desired url
         response = self.session.get(url)
@@ -113,14 +164,26 @@ if __name__ == "__main__":
     #     sys.exit()
     #
     # (options, args) = parser.parse_args()
-
+    starttime = time.time()
     hakuna = TopPosts("pythonbot", "autonomous")
     forums = hakuna.getforums()
     threads = []
+    posts = []
 
     for forum in forums:
         for thread in hakuna.getthreads(forum):
             threads.append(thread)
+    #
+    # for i, thread in enumerate(threads):
+    #     print (str(i) + ": " + thread)
+    for thread in threads:
+        currposts = hakuna.getposts(thread)
+        for post in currposts:
+            posts.append(post)
+    posts.sort(key=itemgetter(2), reverse=True)
 
-    for i, thread in enumerate(threads):
-        print (str(i) + ": " + thread)
+    top10posts = posts[:10]
+    for post in top10posts:
+        print post
+
+    print "Runtime: " + str(time.time() - starttime)

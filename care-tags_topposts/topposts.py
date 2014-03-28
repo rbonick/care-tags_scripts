@@ -125,11 +125,11 @@ class TopPosts:
         posts = []
 
         for forum in forums:
-            for thread in hakuna.getthreads(forum):
+            for thread in self.getthreads(forum):
                 threads.append(thread)
 
         for thread in threads:
-            currposts = hakuna.getposts(thread)
+            currposts = self.getposts(thread)
             for post in currposts:
                 posts.append(post)
 

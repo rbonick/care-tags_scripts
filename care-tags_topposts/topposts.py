@@ -119,6 +119,25 @@ class TopPosts:
 
         return allposts
 
+    def gettop10posts(self):
+        forums = self.getforums()
+        threads = []
+        posts = []
+
+        for forum in forums:
+            for thread in hakuna.getthreads(forum):
+                threads.append(thread)
+
+        for thread in threads:
+            currposts = hakuna.getposts(thread)
+            for post in currposts:
+                posts.append(post)
+
+        posts.sort(key=itemgetter(2), reverse=True)
+
+        top10posts = posts[:10]
+        return top10posts
+
     def __getbs(self, url):
         # Visit desired url
         response = self.session.get(url)

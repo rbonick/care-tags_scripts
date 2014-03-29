@@ -124,14 +124,26 @@ class TopPosts:
         threads = []
         posts = []
 
+        exclusions = ["http://care-tags.org/viewtopic.php?f=2&t=8"]
+
         for forum in forums:
             for thread in self.getthreads(forum):
                 threads.append(thread)
 
         for thread in threads:
-            currposts = self.getposts(thread)
-            for post in currposts:
-                posts.append(post)
+            if thread not in exclusions:
+                currposts = self.getposts(thread)
+                for post in currposts:
+                    posts.append(post)
+
+        posts.sort(key=itemgetter(2), reverse=True)
+
+        top10posts = posts[:10]
+        return top10posts
+
+    def gettop10waywt(self):
+        waywturl = "http://care-tags.org/viewtopic.php?f=2&t=8"
+        posts = self.getposts(waywturl)
 
         posts.sort(key=itemgetter(2), reverse=True)
 

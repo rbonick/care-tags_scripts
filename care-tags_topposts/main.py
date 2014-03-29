@@ -1,5 +1,8 @@
 from topmembers import TopMembers
 from topposts import TopPosts
+import time
+
+starttime = time.time()
 
 topmembers = TopMembers("PythonBot", "autonomous")
 topposts = TopPosts("PythonBot", "autonomous")
@@ -7,27 +10,42 @@ topposts = TopPosts("PythonBot", "autonomous")
 repped = topmembers.mostreppedusers()
 posters = topmembers.gettopposters()
 posts = topposts.gettop10posts()
+waywts = topposts.gettop10waywt()
 
-print "[size=200]Top 10 Members (post count)[/size]"
-print "[b]" + "User".ljust(40) + "Post Count[/b]"
-print "[list=1]"
-for user in posters:
-    print "[*]" + user[0].ljust(40) + str(user[1]) + "[*]"
-print "[/list]"
-print " "
-print "[size=200]Top 10 Members (post count)[/size]"
-print "[b]" + "User".ljust(40) + "Reputation[/b]"
-print "[list=1]"
-for user in repped:
-    print "[*]" + user[0].ljust(40) + str(user[1]) + "[*]"
-print "[/list]"
-print " "
-print "[size=200]Top 10 Posts[/size]"
-print "[b]" + "Poster".ljust(40) + "Reputation[/b]"
+
+print "[size=200]Top 10 Posts (non-WAYWT)[/size]"
+print "[b]" + "Poster" + " - Reputation[/b]"
 print "[list=1]"
 for post in posts:
-    print "[*][url=" + post[0] + "]" + "By " + post[1].ljust(37) + str(post[2]) + "[/url][/*]"
+    print "[*][url=" + post[0] + "]" + "By " + post[1] + " - [b]" + str(post[2]) + "[/b]" + "[/url][/*]"
 print "[/list]"
+print " "
+
+print "[size=200]Top 10 WAYWT Posts[/size]"
+print "[b]" + "Poster" + " - Reputation[/b]"
+print "[list=1]"
+for post in waywts:
+    print "[*][url=" + post[0] + "]" + "By " + post[1] + " - [b]" + str(post[2]) + "[/b]" + "[/url][/*]"
+print "[/list]"
+print " "
+
+print "[size=200]Top 10 Members (post count)[/size]"
+print "[b]" + "User" + " - Post Count[/b]"
+print "[list=1]"
+for user in posters:
+    print "[*]" + user[0] + " - [b]" + str(user[1]) + "[/b]" + "[/*]"
+print "[/list]"
+print " "
+
+print "[size=200]Top 10 Members (reputation)[/size]"
+print "[b]" + "User" + " - Reputation[/b]"
+print "[list=1]"
+for user in repped:
+    print "[*]" + user[0] + " - [b]" + str(user[1]) + "[/b]" + "[/*]"
+print "[/list]"
+
+print time.time() - starttime
+
 
 # Desired output:
 # [size=200]Top 10 Members (post count)[/size]

@@ -119,7 +119,7 @@ class TopPosts:
 
         return allposts
 
-    def gettop10posts(self):
+    def gettopposts(self, numposts):
         forums = self.getforums()
         threads = []
         posts = []
@@ -138,17 +138,17 @@ class TopPosts:
 
         posts.sort(key=itemgetter(2), reverse=True)
 
-        top10posts = posts[:10]
-        return top10posts
+        topposts = posts[:numposts]
+        return topposts
 
-    def gettop10waywt(self):
+    def gettopwaywt(self, numposts):
         waywturl = "http://care-tags.org/viewtopic.php?f=2&t=8"
         posts = self.getposts(waywturl)
 
         posts.sort(key=itemgetter(2), reverse=True)
 
-        top10posts = posts[:10]
-        return top10posts
+        topposts = posts[:numposts]
+        return topposts
 
     def __getbs(self, url):
         # Visit desired url

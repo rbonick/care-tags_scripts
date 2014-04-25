@@ -9,42 +9,51 @@ topposts = TopPosts("PythonBot", "autonomous")
 
 repped = topmembers.mostreppedusers()
 posters = topmembers.gettopposters()
-posts = topposts.gettop10posts()
-waywts = topposts.gettop10waywt()
+rep_per = topmembers.most_rep_per_post_users(10)
+posts = topposts.gettopposts(10)
+waywts = topposts.gettopwaywt(10)
 
 
 print "[size=200]Top 10 Posts (non-WAYWT)[/size]"
-print "[b]" + "Poster" + " - Reputation[/b]"
+print "[spoiler][b]" + "Poster" + " - Reputation[/b]"
 print "[list=1]"
 for post in posts:
     print "[*][url=" + post[0] + "]" + "By " + post[1] + " - [b]" + str(post[2]) + "[/b]" + "[/url][/*]"
-print "[/list]"
+print "[/list][/spoiler]"
 print " "
 
 print "[size=200]Top 10 WAYWT Posts[/size]"
-print "[b]" + "Poster" + " - Reputation[/b]"
+print "[spoiler][b]" + "Poster" + " - Reputation[/b]"
 print "[list=1]"
 for post in waywts:
     print "[*][url=" + post[0] + "]" + "By " + post[1] + " - [b]" + str(post[2]) + "[/b]" + "[/url][/*]"
-print "[/list]"
+print "[/list][/spoiler]"
 print " "
 
 print "[size=200]Top 10 Members (post count)[/size]"
-print "[b]" + "User" + " - Post Count[/b]"
+print "[spoiler][b]" + "User" + " - Post Count[/b]"
 print "[list=1]"
 for user in posters:
     print "[*]" + user[0] + " - [b]" + str(user[1]) + "[/b]" + "[/*]"
-print "[/list]"
+print "[/list][/spoiler]"
 print " "
 
 print "[size=200]Top 10 Members (reputation)[/size]"
-print "[b]" + "User" + " - Reputation[/b]"
+print "[spoiler][b]" + "User" + " - Reputation[/b]"
 print "[list=1]"
 for user in repped:
     print "[*]" + user[0] + " - [b]" + str(user[1]) + "[/b]" + "[/*]"
-print "[/list]"
+print "[/list][/spoiler]"
+print " "
 
-print time.time() - starttime
+print "[size=200]Top 10 Members (rep per post)[/size]"
+print "[spoiler][b]" + "User" + " - Reputation Per Post[/b]"
+print "[list=1]"
+for user in rep_per:
+    print "[*]" + user[0] + " - [b]" + "{0:.2f}".format(user[1]) + "[/b]" + "[/*]"
+print "[/list][/spoiler]"
+
+print time.time() - starttime  #
 
 
 # Desired output:

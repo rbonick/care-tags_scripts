@@ -47,7 +47,8 @@ class RepReader:
 
                 # Parse user
                 user = child.find("a").string
-
+                if user == "Delete":
+                    user = self.username
                 # Parse rep
                 rep = child.find(class_ = "reputation-rating").contents[0]["title"].split()[1]
 

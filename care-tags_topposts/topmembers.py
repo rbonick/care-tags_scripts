@@ -8,57 +8,56 @@ class TopMembers:
         self.username = username
         self.password = password
 
+        self.members = []
+
         #Start session
         self.session = requests.Session()
 
-    # Returns list containing top 10 users (sorted by post count) and their post count as a tuple
-    def gettopposters(self, return_count):
-        soup = self.__getbs("http://care-tags.org/memberlist.php?mode=&sk=d&sd=d#memberlist")
-        postcountlist = []
-
-        # Get number of members
+    def __popupulate_list(self):
+        if len(self.members) > 0:
+            return
+        soup = self.__getbs("http://care-tags.org/memberlist.php?start=0")
         num_members = int(soup.find(class_="pagination").text.split()[0])  # Gets the thread count
-        print num_members
-
         curr_members = 0
         while curr_members < num_members:
-            print "Working, page", curr_members/25 + 1
-            soup = self.__getbs("http://care-tags.org/memberlist.php?sk=d&sd=d&start=" + str(curr_members))
-
+            print "Working, page", curr_members/25 + 1, "of", num_members/25 + 1
+            soup = self.__getbs("http://care-tags.org/memberlist.php?start=" + str(curr_members))
             memberlist = soup.find(id="memberlist").tbody
             for member in memberlist.children:
                 if member.string is None:  # Gets rid of the newlines
                     # Store username and post count pair in the list
                     user = member.td.a.string
                     postcount = int(member.find(class_="posts").string)
-                    postcountlist.append((user, postcount))
+                    repcount = int(member.find_all(class_="posts")[1].string)
+                    if postcount > 0:
+                        rep_per = float(repcount)/float(postcount)
+                    else:
+                        rep_per = -1
+                    self.members.append({"user": user, "posts": postcount, "rep": repcount, "rep_per":rep_per})
             curr_members += 25
+
+    # Returns list containing top 10 users (sorted by post count) and their post count as a tuple
+    def gettopposters(self, return_count):
+        self.__popupulate_list()
+        postcountlist = []
+
+        for entry in self.members:
+            postcountlist.append((entry["user"], entry["posts"]))
+
+        postcountlist.sort(key=itemgetter(1), reverse=True)
 
         # Take the top 10 users
         return postcountlist[:return_count]
 
     # Returns list containing top 10 users (sorted by reputation) and their reputation as a tuple
     def mostreppedusers(self, return_count):
-        soup = self.__getbs("http://care-tags.org/memberlist.php?mode=&sk=r&sd=d#memberlist")
+        self.__popupulate_list()
         userreplist = []
 
-        # Get number of members
-        num_members = int(soup.find(class_="pagination").text.split()[0])  # Gets the thread count
-        print num_members
+        for entry in self.members:
+            userreplist.append((entry["user"], entry["rep"]))
 
-        curr_members = 0
-        while curr_members < num_members:
-            print "Working, page", curr_members/25 + 1
-            soup = self.__getbs("http://care-tags.org/memberlist.php?sk=r&sd=d&start=" + str(curr_members))
-
-            memberlist = soup.find(id="memberlist").tbody
-            for member in memberlist.children:
-                if member.string is None:  # Get rid of newlines
-                    # print member.prettify()
-                    user = member.td.a.string
-                    repcount = member.find_all(class_="posts")[1].string
-                    userreplist.append((user, repcount))
-            curr_members += 25
+        userreplist.sort(key=itemgetter(1), reverse=True)
 
         # Take top 10 users
         return userreplist[:return_count]
@@ -66,26 +65,14 @@ class TopMembers:
     # Returns list containing top return_count users (sorted by rep per post count) in the form
     # (User, rep/post, posts, rep)
     def most_rep_per_post_users(self, return_count):
+        self.__popupulate_list()
         users = []
-        soup = self.__getbs("http://care-tags.org/memberlist.php")
-        num_users = int(soup.find(class_ = "rightside pagination").text.split()[0])
-        curr_user = 0
-        while curr_user < num_users:
-            print "Working, page", curr_user/25 + 1
-            soup = self.__getbs("http://care-tags.org/memberlist.php?start=" + str(curr_user))
-            body = soup.tbody
-            for child in body.children:
-                if child.string is None:
-                    user = child.td.a.string
-                    posts = int(child.find_all("td")[1].string)
-                    rep = int(child.find_all("td")[3].string)
-                    if posts > 0:
-                        rep_per = float(rep)/float(posts)
-                    else:
-                        rep_per = -1.
-                    users.append((user, rep_per, posts, rep))
-            curr_user += 25
+
+        for entry in self.members:
+            users.append((entry["user"], entry["rep_per"]))
+
         users.sort(key=itemgetter(1), reverse=True)
+
         return users[:return_count]
 
     def __getbs(self, url):

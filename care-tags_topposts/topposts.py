@@ -82,7 +82,7 @@ class TopPosts:
             numposts = int(pagination[4])
         currpost = 0
         while currpost < numposts:
-            print "Working, page", currpost/25 + 1, "of", numposts/25 + 1
+            print "Working, page", currpost/30 + 1, "of", numposts/30 + 1
             soup = self.__getbs(threadurl + "&start=" + str(currpost))
             threadposts = soup.find_all(class_="post")
             for threadpost in threadposts:

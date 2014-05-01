@@ -34,7 +34,7 @@ rep_per = topmembers.most_rep_per_post_users(10)
 posts = topposts.gettopposts(10)
 waywts = topposts.gettopwaywt(10)
 
-with open("output.txt", "a") as f:
+with open("topposts_output.txt", "a") as f:
     f.write("Current date & time " + time.strftime("%c"))
     posts_to_bbcode("Top 10 Posts (non-WAYWT)", "Poster", "Reputation", posts, f)
     posts_to_bbcode("Top 10 WAYWT Posts", "Poster", "Reputation", waywts, f)

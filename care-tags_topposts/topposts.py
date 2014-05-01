@@ -42,7 +42,7 @@ class TopPosts:
         numposts = int(pagination.text.split()[4])  # Gets the thread count
         currpost = 0
         while currpost < numposts:
-            print "Working..."
+            print "Getting thread urls from page", currpost/25 + 1, "out of ", numposts/25 + 1
             soup = self.__getbs(forumurl + "&start=" + str(currpost))
             postlists = soup.find_all(class_="topiclist topics")
             if len(postlists) > 1:
@@ -82,7 +82,7 @@ class TopPosts:
             numposts = int(pagination[4])
         currpost = 0
         while currpost < numposts:
-            print "Working..."
+            print "Working, page", currpost/25 + 1, "of", numposts/25 + 1
             soup = self.__getbs(threadurl + "&start=" + str(currpost))
             threadposts = soup.find_all(class_="post")
             for threadpost in threadposts:
@@ -126,11 +126,13 @@ class TopPosts:
 
         exclusions = ["http://care-tags.org/viewtopic.php?f=2&t=8"]
 
-        for forum in forums:
+        for i, forum in enumerate(forums):
+            print "Working, forum", i+1, "out of", len(forums)
             for thread in self.getthreads(forum):
                 threads.append(thread)
 
-        for thread in threads:
+        for i, thread in enumerate(threads):
+            print "Working, thread", i+1, "out of", len(threads)
             if thread not in exclusions:
                 currposts = self.getposts(thread)
                 for post in currposts:

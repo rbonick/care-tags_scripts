@@ -4,8 +4,8 @@ import time
 
 
 def posts_to_bbcode(title, head1, head2, posts, output):
-    output.write("[size=200]", title, "[/size]")
-    output.write("[spoiler][b]", head1, "-",  head2, "[/b]")
+    output.write("[size=200]" + str(title) + "[/size]")
+    output.write("[spoiler][b]" + str(head1) + " - " + str(head2) + "[/b]")
     output.write("[list=1]")
     for post in posts:
         output.write("[*][url=" + post[0] + "]" + "By " + post[1] + " - [b]" + str(post[2]) + "[/b]" + "[/url][/*]")
@@ -14,8 +14,8 @@ def posts_to_bbcode(title, head1, head2, posts, output):
 
 
 def members_to_bbcode(title, head1, head2, members, output):
-    output.write("[size=200]", title, "[/size]")
-    output.write("[spoiler][b]", head1, "-",  head2, "[/b]")
+    output.write("[size=200]" + str(title) + "[/size]")
+    output.write("[spoiler][b]" + str(head1) + " - " + str(head2) + "[/b]")
     output.write("[list=1]")
     for member in members:
         output.write("[*]" + member[0] + " - [b]" + str(member[1]) + "[/b]" + "[/*]")
@@ -42,4 +42,4 @@ with open("topposts_output.txt", "a") as f:
     members_to_bbcode("Top 10 Members (reputation)", "User", "Reputation", repped, f)
     members_to_bbcode("Top 10 Members (rep per post)", "User", "Reputation Per Post", rep_per, f)
 
-    f.write(time.time() - starttime)  #
+    f.write("Runtime: " + str(time.time() - starttime))  #

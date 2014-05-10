@@ -2,8 +2,6 @@ from bs4 import BeautifulSoup
 import requests
 from operator import itemgetter
 import time
-import grequests
-
 
 
 class TopPosts:
@@ -38,17 +36,15 @@ class TopPosts:
     # Returns urls for all threads within a given forum
     def getthreads(self, forumurl):
         threadurls = []
-        forumurls = []
 
         soup = self.__getbs(forumurl)
         pagination = soup.find(class_="pagination")
         numposts = int(pagination.text.split()[4])  # Gets the thread count
         currpost = 0
         while currpost < numposts:
-            forumurls.append(forumurl + "&start=" + str(currpost))
-            currpost += 25
-        for response in self.__getallbs(forumurls):
-            postlists = response.find_all(class_="topiclist topics")
+            print "Getting thread urls from page", currpost/25 + 1, "out of ", numposts/25 + 1
+            soup = self.__getbs(forumurl + "&start=" + str(currpost))
+            postlists = soup.find_all(class_="topiclist topics")
             if len(postlists) > 1:
                 # Handle announcements (only once)
                 if currpost is 0:
@@ -70,13 +66,13 @@ class TopPosts:
                     stringsplit = li.dl.dt.a["href"].replace("=", "*").replace("&", "*").split("*")
                     threadurls.append("http://care-tags.org/viewtopic.php?f=" + stringsplit[1] +
                                       "&t=" + stringsplit[3])
+            currpost += 25
+
         return threadurls
 
     # Returns all posts for a given thread in the form (Post url, poster, reputation)
     def getposts(self, threadurl):
         allposts = []
-        pageurls = []
-
         soup = self.__getbs(threadurl)
         pagination = soup.find(class_="pagination").text.split()
         # If there are unread posts, pagination[0] is "First", so you need pagination[4] instead
@@ -86,43 +82,9 @@ class TopPosts:
             numposts = int(pagination[4])
         currpost = 0
         while currpost < numposts:
-            pageurls.append(threadurl + "&start=" + str(currpost))
-            # print "Working, page", currpost/30 + 1, "of", numposts/30 + 1
-            # soup = self.__getbs(threadurl + "&start=" + str(currpost))
-            # threadposts = soup.find_all(class_="post")
-            # for threadpost in threadposts:
-            #     # Extract username
-            #     try:
-            #         user = threadpost.div.dl.dt.find_all("a")
-            #     except:  # If user is banned/no longer exists it won't work so just break
-            #         # TODO: Fix so it still works with banned users
-            #         break
-            #     # If no avatar then it's the first element, otherwise the second element
-            #     try:
-            #         if len(user) is 1:
-            #             user = user[0].string
-            #         elif len(user) is 2:
-            #             user = user[1].string
-            #         else:
-            #             break
-            #     except:
-            #         print "FAILED"
-            #         print threadurl + "&start=" + str(currpost)
-            #         print threadpost.prettify()
-            #         print user
-            #         user = "FAILED SOMEHOW"
-            #
-            #     # Extract post id and generate its permalink
-            #     postid = threadpost["id"]
-            #     posturl = threadurl + "&start=" + str(currpost) + "#" + postid
-            #
-            #     # Extract rep of the post
-            #     postrep = int(threadpost.find(title="Post reputation").a.string)
-            #
-            #     allposts.append((posturl, user, postrep))
-            currpost += 30
-        for response in self.__getallbs(pageurls):
-            threadposts = response.find_all(class_="post")
+            print "Working, page", currpost/30 + 1, "of", numposts/30 + 1
+            soup = self.__getbs(threadurl + "&start=" + str(currpost))
+            threadposts = soup.find_all(class_="post")
             for threadpost in threadposts:
                 # Extract username
                 try:
@@ -150,9 +112,11 @@ class TopPosts:
                 posturl = threadurl + "&start=" + str(currpost) + "#" + postid
 
                 # Extract rep of the post
-                postrep = int(threadpost.find(title="Post reputation").string)
+                postrep = int(threadpost.find(title="Post reputation").a.string)
 
                 allposts.append((posturl, user, postrep))
+            currpost += 30
+
         return allposts
 
     def gettopposts(self, numposts):
@@ -197,34 +161,54 @@ class TopPosts:
 
         return bs
 
-    def __getallbs(self, urls):
-        '''
-        Given a list of urls, returns list of Beautiful Soups
-        made from the text associated with each page
-        '''
-        soups = []
-        rs = (grequests.get(u) for u in urls if u[0] is 'h')
-        for i, response in enumerate(grequests.map(rs, size=100)):
-            print "On", i
-            if response is not None:
-                soups.append(BeautifulSoup(response.text))
-        return soups
-
 if __name__ == "__main__":
+    # from optparse import OptionParser
+    # import sys
+    #
+    # parser = OptionParser()
+    #
+    # usage = "Usage: %prog -u <USERNAME> -p <PASSWORD> -n <USERNUMBER TO DISPLAY>"
+    # parser = OptionParser(usage)
+    #
+    # parser.add_option(
+    #     "-u",
+    #     "--username",
+    #     dest="user",
+    #     help="Needs a username to login with",
+    #     default=None)
+    #
+    # parser.add_option(
+    #     "-p",
+    #     "--password",
+    #     dest="pw",
+    #     help="Need the password to login user",
+    #     default=None)
+    #
+    # parser.add_option(
+    #         "-n",
+    #         "--number",
+    #         dest="usernum",
+    #         help="The user number to look up",
+    #         type="int",
+    #         default=2)
+    #
+    # if not len(sys.argv) == 7:
+    #     parser.print_help()
+    #     sys.exit()
+    #
+    # (options, args) = parser.parse_args()
     starttime = time.time()
     hakuna = TopPosts("pythonbot", "autonomous")
     forums = hakuna.getforums()
     threads = []
     posts = []
 
-    print "Getting forums"
     for forum in forums:
         for thread in hakuna.getthreads(forum):
             threads.append(thread)
     #
     # for i, thread in enumerate(threads):
     #     print (str(i) + ": " + thread)
-    print "Getting threads/posts"
     for thread in threads:
         currposts = hakuna.getposts(thread)
         for post in currposts:

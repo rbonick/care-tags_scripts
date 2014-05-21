@@ -1,1 +1,4 @@
 .idea/
+.idea/care-tags_scripts.iml
+.idea/misc.xml
+*.pyc

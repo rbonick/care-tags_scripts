@@ -72,6 +72,7 @@ class TopPosts:
 
     # Returns all posts for a given thread in the form (Post url, poster, reputation)
     def getposts(self, threadurl):
+        print threadurl
         allposts = []
         soup = self.__getbs(threadurl)
         pagination = soup.find(class_="pagination").text.split()

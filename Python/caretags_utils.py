@@ -11,7 +11,7 @@ class CaretagsUtils():
     LOGIN_URL = "http://care-tags.org/ucp.php?mode=login"
 
     def __init__(self):
-
+        self.is_logged_in = False
         self.session = requests.Session()
 
     def login(self, username, password):
@@ -23,14 +23,20 @@ class CaretagsUtils():
         :param password: the password to use
         :return: Whether the login succeeded
         """
-        # Create the login data and the request
+        # Create the login data
         payload = {"username": username, "password": password, "autologin": "on", "login": "login"}
+
+        # Send the login request
         response = self.session.post(self.LOGIN_URL, data=payload)
-        if response.status_code != 200:
-            response.raise_for_status()
+
+        # Raise an exception if an HTTP error occurred
+        response.raise_for_status()
+
+        # Look through the response data to see if the user was successfully logged in
         soup = BeautifulSoup(response.text)
-        if soup.find(text=re.compile("Logout")):
+        if soup.find(text=re.compile("Logout \[.*\]")):
             print username + " logged in successfully!"
+            self.is_logged_in = True
             return True
         else:
             # TODO: better failure response (was it really a bad login?)

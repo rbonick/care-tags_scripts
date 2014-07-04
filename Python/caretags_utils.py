@@ -43,6 +43,24 @@ class CaretagsUtils():
             print "Login failed. Perhaps check your login information is correct?"
             return False
 
+    def get_soup(self, url):
+        """
+        Gets a BeautifulSoup object corresponding to the html of the url.
+
+        :param url: The url to make Soup from
+        :return: A BeautifulSoup object for the web page
+        """
+        # TODO: verify that the response text corresponds to html (as opposed to JSON or something)
+        # Send a GET request for the url
+        response = self.session.get(url)
+
+        # If an error was returned, raise an exception
+        response.raise_for_status()
+
+        # Otherwise return the souped up (haha) version of the html
+        return BeautifulSoup(response.text)
+
+
 if __name__ == "__main__":
     utils = CaretagsUtils()
     utils.login("pythonbot", "autonomous")

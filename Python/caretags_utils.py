@@ -5,13 +5,17 @@ __author__ = 'Ryan'
 from bs4 import BeautifulSoup
 import grequests
 import requests
+import urlparse
 
 
 class CaretagsUtils():
     LOGIN_URL = "http://care-tags.org/ucp.php?mode=login"
+    THREADS_PER_PAGE = 25
 
     def __init__(self):
         self.is_logged_in = False
+
+        # session will hold the cookies
         self.session = requests.Session()
 
     def login(self, username, password):
@@ -60,7 +64,92 @@ class CaretagsUtils():
         # Otherwise return the souped up (haha) version of the html
         return BeautifulSoup(response.text)
 
+    def get_all_forums(self):
+        """
+        Gets all forums
+
+        :return: A list containing the urls of each forum
+        """
+        # Currently static.
+        # TODO: Would be nice to make dynamic
+        forumnums = [2, 3, 6]
+        forumurls = []
+
+        for num in forumnums:
+            forumurls.append("http://care-tags.org/viewforum.php?f=" + str(num))
+
+        return forumurls
+
+    def get_all_threads(self, forum_url):
+        """
+        Gets all threads for a given forum
+
+        :param forum_url: The url to get all threads from
+        :return: A list of thread urls
+        """
+        page_urls = []
+        thread_urls = []
+
+        # Get number of pages
+        soup = self.get_soup(forum_url)
+        pagination = soup.find(class_="pagination")
+        num_posts = int(pagination.text.split()[4])
+
+        # Get all the pages
+        for page_start in range(0, num_posts, self.THREADS_PER_PAGE):
+            page_urls.append(forum_url + "&start=" + str(page_start))
+        requests = (grequests.get(u) for u in page_urls)
+        responses = grequests.map(requests, size=50)
+
+        # Error check
+        for response in responses:
+            response.raise_for_status()
+            assert(response.url in page_urls)
+        assert(len(responses) == len(page_urls))
+
+        # See if there are announcement threads and grab them.
+        if len(soup.select("div.forumbg ul.topiclist.topics")) > 1:
+            announcement_list =  soup.select("div.forumbg ul.topiclist.topics")[0]
+            # For each topic (thread) get the url
+            for li in announcement_list.find_all("li"):
+                # Need to isolate the topic ID
+                topic_url = li.find(class_="topictitle").get('href')
+                parsed_topic_url = urlparse.urlparse(topic_url)
+                topic_id = urlparse.parse_qs(parsed_topic_url.query)['t']
+
+                # Create the url corresponding with that topic ID
+                thread_url = str(forum_url + "&t=" + topic_id[0]).replace("forum", "topic")
+                thread_urls.append(thread_url)
+
+        for response in responses:
+            # Make soup of the page
+            soup = BeautifulSoup(response.text)
+
+            # The main topic list will always be last one
+            topic_list = soup.select("div.forumbg ul.topiclist.topics")[-1]
+
+            # For each topic (thread) get the url
+            # TODO: return topic title as well?
+            for li in topic_list.find_all("li"):
+                # Need to isolate the topic ID
+                topic_url = li.find(class_="topictitle").get('href')
+                parsed_topic_url = urlparse.urlparse(topic_url)
+                topic_id = urlparse.parse_qs(parsed_topic_url.query)['t']
+                thread_url = str(forum_url + "&t=" + topic_id[0]).replace("forum", "topic")
+                thread_urls.append(thread_url)
+
+        # Check that all thread urls were found
+        try:
+            assert(len(thread_urls) == num_posts)
+        except AssertionError:
+            print num_posts, len(thread_urls)
+
+        # Return it
+        return thread_urls
 
 if __name__ == "__main__":
     utils = CaretagsUtils()
     utils.login("pythonbot", "autonomous")
+    forums = utils.get_all_forums()
+    for forum in forums:
+        utils.get_all_threads(forum)

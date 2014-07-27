@@ -67,7 +67,7 @@ class PostUtils:
         for link in soup.find(class_ = "content").find_all("a"):
             post.links.append(link['href'])
 
-        # Get thread (store in form of [name, url] in case something changes)
+        # Get thread title
         post.thread_title = soup.h3.text.split("Re: ")[-1]
 
         return post

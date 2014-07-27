@@ -147,9 +147,26 @@ class CaretagsUtils():
         # Return it
         return thread_urls
 
+    def load_username_and_password(self):
+        """
+        Loads username and password from a file and returns it
+        """
+        with open('login','r') as f:
+            username = f.readline().strip("\n")
+            password = f.readline().strip("\n")
+        return username, password
+
+    def login_from_file(self):
+        """
+        Loads username and password from file, then logs in with it
+        """
+        username, password = self.load_username_and_password()
+        self.login(username, password)
+
 if __name__ == "__main__":
     utils = CaretagsUtils()
-    utils.login("pythonbot", "autonomous")
+    username, password = utils.load_username_and_password()
+    utils.login(username, password)
     forums = utils.get_all_forums()
     for forum in forums:
         utils.get_all_threads(forum)

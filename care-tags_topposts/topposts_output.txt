@@ -74,8 +74,10 @@ Current date & time 06/01/14 09:38:50
 [*]celladore - [b]11.0[/b][/*]
 [/list][/spoiler]
 
-
 Runtime: 1179.74100018
+
+
+
 Current date & time 07/01/14 08:11:02
 [size=200]Top 10 Posts (non-WAYWT)[/size]
 [spoiler][b]Poster - Reputation[/b]
@@ -152,5 +154,85 @@ Current date & time 07/01/14 08:11:02
 [*]bsdswg - [b]13.0[/b][/*]
 [/list][/spoiler]
 
-
 Runtime: 1703.79499984
+
+
+
+Current date & time 08/01/14 07:39:07
+[size=200]Top 10 Posts (non-WAYWT)[/size]
+[spoiler][b]Poster - Reputation[/b]
+[list=1]
+[*][url=http://care-tags.org/viewtopic.php?f=3&t=413&start=0#p14883]By maj - [b]62[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=3&t=413&start=0#p15225]By odradek - [b]61[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=3&t=413&start=30#p15472]By verilyvert - [b]59[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=3&t=413&start=30#p15533]By prawnzee - [b]57[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=3&t=3&start=1320#p21204]By Syeknom - [b]49[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=3&t=619&start=90#p26534]By grippers - [b]48[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=3&t=658&start=0#p29066]By parastexis - [b]48[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=3&t=413&start=30#p15451]By cameron- - [b]48[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=2&t=31&start=1530#p20030]By hmwut - [b]47[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=3&t=228&start=180#p27130]By maj - [b]47[/b][/url][/*]
+[/list][/spoiler]
+
+[size=200]Top 10 WAYWT Posts[/size]
+[spoiler][b]Poster - Reputation[/b]
+[list=1]
+[*][url=http://care-tags.org/viewtopic.php?f=2&t=8&start=2520#p32145]By Syeknom - [b]93[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=2&t=8&start=2040#p25731]By ramdomthought - [b]86[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=2&t=8&start=2460#p31364]By maj - [b]77[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=2&t=8&start=2100#p26428]By Syeknom - [b]76[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=2&t=8&start=1680#p21042]By hmwut - [b]75[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=2&t=8&start=1980#p24823]By exprof - [b]75[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=2&t=8&start=2100#p26345]By Rosenrot - [b]70[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=2&t=8&start=2130#p26663]By exprof - [b]70[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=2&t=8&start=2340#p29875]By hmwut - [b]70[/b][/url][/*]
+[*][url=http://care-tags.org/viewtopic.php?f=2&t=8&start=1980#p24851]By diniro - [b]69[/b][/url][/*]
+[/list][/spoiler]
+
+[size=200]Top 10 Members (post count)[/size]
+[spoiler][b]User - Post Count[/b]
+[list=1]
+[*]bela - [b]2039[/b][/*]
+[*]cameron- - [b]1849[/b][/*]
+[*]Syeknom - [b]1611[/b][/*]
+[*]germinal - [b]956[/b][/*]
+[*]starfox64 - [b]943[/b][/*]
+[*]ramseames - [b]846[/b][/*]
+[*]sknss - [b]779[/b][/*]
+[*]RycePooding - [b]634[/b][/*]
+[*]maj - [b]620[/b][/*]
+[*]smiles - [b]556[/b][/*]
+[/list][/spoiler]
+
+[size=200]Top 10 Members (reputation)[/size]
+[spoiler][b]User - Reputation[/b]
+[list=1]
+[*]cameron- - [b]4612[/b][/*]
+[*]bela - [b]3955[/b][/*]
+[*]Syeknom - [b]3883[/b][/*]
+[*]maj - [b]3069[/b][/*]
+[*]exprof - [b]2546[/b][/*]
+[*]smiles - [b]2471[/b][/*]
+[*]germinal - [b]2418[/b][/*]
+[*]Bobbin.Threadbare - [b]2282[/b][/*]
+[*]kyung - [b]2074[/b][/*]
+[*]sknss - [b]2017[/b][/*]
+[/list][/spoiler]
+
+[size=200]Top 10 Members (rep per post)[/size]
+[spoiler][b]User - Reputation Per Post[/b]
+[list=1]
+[*]themeditator - [b]43.5[/b][/*]
+[*]Azurewrath - [b]21.6363636364[/b][/*]
+[*]Anorak - [b]20.5[/b][/*]
+[*]matrimonioids - [b]19.0[/b][/*]
+[*]conhnore - [b]19.0[/b][/*]
+[*]diniro - [b]17.0833333333[/b][/*]
+[*]millikelvin - [b]14.0[/b][/*]
+[*]umbreyonce - [b]13.3333333333[/b][/*]
+[*]birdman caw - [b]13.0107526882[/b][/*]
+[*]bsdswg - [b]13.0[/b][/*]
+[/list][/spoiler]
+
+
+Runtime: 1414.90199995

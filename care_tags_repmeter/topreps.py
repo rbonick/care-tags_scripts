@@ -74,25 +74,36 @@ class TopTen(RepReader):
 		bg2_numbers = []	
 
 		member_list_pages = self.get_member_list()
-
 		for page in member_list_pages:
-		
 			#Make soup, pull user numbers
 			bs = BeautifulSoup(page)
 			user_rows_bg1 = bs.find_all('tr',{'class':'bg1'})
 			bg1_numbers += self.__get_user_numbers(bs.find_all('tr',{'class':'bg1'}))
 			bg2_numbers += self.__get_user_numbers(bs.find_all('tr',{'class':'bg2'}))
-
 		return bg1_numbers + bg2_numbers
 
 	def calculate_top_ten(self):
 		top_ten = []
-		all_results = []
-		#numbers = self.scrape_user_numbers()
-		numbers = [63, 66]
+		results = []
+		rep_given = defaultdict(lambda : 0)
+		numbers = self.scrape_user_numbers()
+		#numbers = [63, 66]
+		pos = 1
 		for number in numbers:
-			all_results += self.receivedrep(number)
-		return all_results
+			print "Progress: user number " + str(number) + ". " + str(pos) + " of " + str(len(numbers))
+			pos+=1
+			results += self.receivedrep(number)
+			for result in results: 
+				rep_given[result[0]] += result[1]
+		sorted_rep_given = sorted(rep_given.items(), key=itemgetter(1), reverse=True)
+		counter = 0
+		for item in sorted_rep_given:
+			top_ten+= (item[0],item[1])
+			if( len(top_ten) == 20): #10 2-tuples
+				break
+		#for key in sorted(rep_given.iterkeys()):
+		#	print key + " " + str(rep_given[key])
+		return top_ten
 
 		
 	
@@ -125,4 +136,5 @@ if __name__ == "__main__":
 	(options, args) = parser.parse_args()
 	test = TopTen(options.user, options.pw)
 	mylist = test.calculate_top_ten()
-	print mylist
+	for item in mylist:
+		print item[0] + " " + str(item[1])

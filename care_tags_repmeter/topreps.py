@@ -13,7 +13,7 @@ import itertools
 
 
 #Lists the top ten users by rep given
-class TopTen(RepReader):
+class TopRepGivers(RepReader):
 
 	def __init__(self, username, password):
 		RepReader.__init__(self, username, password)
@@ -24,7 +24,6 @@ class TopTen(RepReader):
 			link = tag.find("a").get('href')
 			if link:
 				result = re.match('(.*)(viewprofile\&u\=)(\d*)', link.decode('utf-8'), re.I | re.U)
-				#result = re.match('(.*)(\d*)', link)
 				if result:
 					numbers.append(str(result.group(3)))
 		return numbers
@@ -77,17 +76,15 @@ class TopTen(RepReader):
 		for page in member_list_pages:
 			#Make soup, pull user numbers
 			bs = BeautifulSoup(page)
-			user_rows_bg1 = bs.find_all('tr',{'class':'bg1'})
 			bg1_numbers += self.__get_user_numbers(bs.find_all('tr',{'class':'bg1'}))
 			bg2_numbers += self.__get_user_numbers(bs.find_all('tr',{'class':'bg2'}))
 		return bg1_numbers + bg2_numbers
 
-	def calculate_top_ten(self):
+	def calculate_top_x(self, num):
 		top_ten = []
 		results = []
 		rep_given = defaultdict(lambda : 0)
 		numbers = self.scrape_user_numbers()
-		#numbers = [63, 66]
 		pos = 1
 		for number in numbers:
 			print "Progress: user number " + str(number) + ". " + str(pos) + " of " + str(len(numbers))
@@ -98,11 +95,9 @@ class TopTen(RepReader):
 		sorted_rep_given = sorted(rep_given.items(), key=itemgetter(1), reverse=True)
 		counter = 0
 		for item in sorted_rep_given:
-			top_ten+= (item[0],item[1])
-			if( len(top_ten) == 20): #10 2-tuples
+			top_ten.append((item[0],item[1]))
+			if( len(top_ten) == 2*num): #num 2-tuples
 				break
-		#for key in sorted(rep_given.iterkeys()):
-		#	print key + " " + str(rep_given[key])
 		return top_ten
 
 		
@@ -134,7 +129,7 @@ if __name__ == "__main__":
 	)
 
 	(options, args) = parser.parse_args()
-	test = TopTen(options.user, options.pw)
-	mylist = test.calculate_top_ten()
+	test = TopRepGivers(options.user, options.pw)
+	mylist = test.calculate_top_x(10)
 	for item in mylist:
 		print item[0] + " " + str(item[1])

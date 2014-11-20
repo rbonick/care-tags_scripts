@@ -89,7 +89,7 @@ class TopRepGivers(RepReader):
 		for number in numbers:
 			print "Progress: user number " + str(number) + ". " + str(pos) + " of " + str(len(numbers))
 			pos+=1
-			results += self.receivedrep(number)
+			results = self.receivedrep(number)
 			for result in results: 
 				rep_given[result[0]] += result[1]
 		sorted_rep_given = sorted(rep_given.items(), key=itemgetter(1), reverse=True)

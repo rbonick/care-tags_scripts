@@ -27,6 +27,10 @@ class RepReader:
         pages = self.__gethtml(usernum)
         repdict = defaultdict(list)
         
+        #special case for no rep
+        if not pages:
+            return [['none', 0, 0]]
+
         # Iterate through each of the rep pages
         for page in pages:
             
@@ -78,6 +82,8 @@ class RepReader:
         try:
             rep = int(tag.find("ul").find("li").text.split()[0])
         except:
+            if(tag.find("div",{"class":"reputation-list empty bg3"})):
+                return "0"
             print("An error occured. Are you sure you're logged in correctly?")
             sys.exit("Couldn't find total rep")
         return rep
@@ -103,6 +109,10 @@ class RepReader:
         bs = BeautifulSoup(response.text)
         totalrep = self.__gettotalrep(bs.find(id="post-reputation-list"))
 
+        #special case for zero rep
+        if(totalrep == "0"):
+            return []
+    
         # Iterate through all rep pages
         pages = []
         urls = []

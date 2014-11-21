@@ -96,7 +96,7 @@ class TopRepGivers(RepReader):
 		counter = 0
 		for item in sorted_rep_given:
 			top_ten.append((item[0],item[1]))
-			if( len(top_ten) == 2*num): #num 2-tuples
+			if( len(top_ten) == num): #num 2-tuples
 				break
 		return top_ten
 
